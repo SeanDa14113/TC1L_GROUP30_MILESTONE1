@@ -1,8 +1,9 @@
 #Ignore all these file
+#Ian test here
 /obj
 /bin
-*.docx
 *.cbp
+*.docx
 *.layout
 main
 _codeql_detected_source_root
