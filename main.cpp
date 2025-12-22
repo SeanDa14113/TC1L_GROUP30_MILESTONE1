@@ -6,9 +6,9 @@ Lecture Class: TC1L
 Tutorial Class: TT1L
 Trimester: 2530
 Member_1: 252UC2543V | Wong_Haw_Jack | WONG.HAW.JACK@student.mmu.edu.my | +60123626436
-Member_2: 252UC2543V | Wong_Haw_Jack | WONG.HAW.JACK@student.mmu.edu.my | +60123626436
+Member_2: 252UC2528G |   Tan_Yi_Da   | TAN.YI.DA@student.mmu.edu.my     | +60166273669
 Member_3: 252UC2543V | Wong_Haw_Jack | WONG.HAW.JACK@student.mmu.edu.my | +60123626436
-Member_4: 252UC2543V | Wong_Haw_Jack | WONG.HAW.JACK@student.mmu.edu.my | +60123626436
+Member_4: 252UC250R2 | Zeid Mahmoud  | ZEID.MAHMOUD.SALEH1@student.mmu.edu.my |+601137304844
 
 **********************************************
 
@@ -144,4 +144,25 @@ void view_attendance_sheet()
 
     // Close the file
     inFile.close();
+}
+void insert_new_row(string file)
+{
+    string file_name = file;
+    ofstream output_file;
+    output_file.open(file_name, ios::app);
+
+    int studentID, status;
+    string student_name;
+
+    cout << "Enter Student ID: " << endl;
+    cin >> studentID;
+
+    cout << "Enter Student Name: " << endl;
+    cin >> student_name;
+
+    cout << "Enter Attendance Status (Presence(1), Absence(0)): " << endl;
+    cin >> status;
+
+    outputfile << studentID << ',' << student_name << ',' << status;
+    cout << "New row insert successfully.";
 }
