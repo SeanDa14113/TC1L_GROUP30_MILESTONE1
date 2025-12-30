@@ -190,7 +190,8 @@ void initialize_metadata(string file)
       }
       for (int x=0;x<FileCol;x++)
       {
-         if (colName[x].find("TEXT") != string::npos)
+         size_t len = colName[x].length();
+         if (len >= 6 && colName[x].substr(len - 6) == "(TEXT)")
             colType[x]="string";
          else
             colType[x]="int";
