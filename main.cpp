@@ -51,7 +51,7 @@ void NewFile();
 void initialize_metadata(string file);
 bool validate_column_format(const string& col);
 
-// Function to validate column format - must contain (TEXT) or (INT)
+// Function to validate column format - must end with (TEXT) or (INT)
 bool validate_column_format(const string& col)
 {
     // Check if column ends with (TEXT) or (INT)
@@ -122,7 +122,7 @@ int main()
                    }
                    else
                    {
-                       cout << "Error: Column must include type specification (TEXT) or (INT)." << endl;
+                       cout << "Error: Column must end with type specification (TEXT) or (INT)." << endl;
                        cout << "Example: Name (TEXT) or Age (INT)" << endl;
                    }
                }
