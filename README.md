@@ -257,12 +257,12 @@ TC1L_GROUP30_MILESTONE1/
 **Class**: TC1L / TT1L  
 **Trimester**: 2530
 
-| Member | ID | Name | Email | Phone | Task |
-|--------|-------|------|-------|-------|------|
-| Member 1 | 252UC2543V | Wong Haw Jack | WONG.HAW.JACK@student.mmu.edu.my | +60123626436 | Insert New Row |
-| Member 2 | 252UC2528G | Tan Yi Da | TAN.YI.DA@student.mmu.edu.my | +60166273669 | File Management |
-| Member 3 | 252UC2543V | Wong Haw Jack | WONG.HAW.JACK@student.mmu.edu.my | +60123626436 | Show Menu |
-| Member 4 | 252UC250R2 | Zeid Mahmoud | ZEID.MAHMOUD.SALEH1@student.mmu.edu.my | +601137304844 | View Sheet |
+| Member | ID | Name | Task |
+|--------|-------|------|------|
+| Member 1 | 252UC2543V | Wong Haw Jack | Insert New Row |
+| Member 2 | 252UC2528G | Tan Yi Da | File Management |
+| Member 3 | 252UC256J | Chen Cheo Chuen | Show Menu |
+| Member 4 | 252UC250R2 | Zeid Mahmoud | View Sheet |
 
 ## Known Issues
 
