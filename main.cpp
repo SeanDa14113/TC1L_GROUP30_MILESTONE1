@@ -26,6 +26,7 @@ Member_4: View Sheet
 #include <sstream>
 #include <limits>
 #include <vector>
+#include <cctype>
 
 using namespace std;
 
@@ -41,6 +42,7 @@ enum CHOICE
 {
     INSERT_ROW,
     VIEW_SHEET,
+    COUNT_ROW,
     EXIT
 };
 
@@ -49,11 +51,20 @@ void insert_new_row(string file_name);
 void view_attendance_sheet();
 void NewFile();
 void initialize_metadata(string file);
+bool validate_column_format(const string& col);
+void updateSts();
+
+// Function to validate column format - must end with (TEXT) or (INT)
+bool validate_column_format(const string& col)
+{
+    // Check if column ends with (TEXT) or (INT)
+    size_t len = col.length();
+    return (len >= 6 && col.substr(len - 6) == "(TEXT)") ||
+           (len >= 5 && col.substr(len - 5) == "(INT)");
+}
 
 int main()
 {
-
-
     cout << "========================================" << endl;
     cout << "STUDENT ATTENDANCE TRACKER - MILESTONE 1" << endl;
     cout << "========================================" << endl;
@@ -98,9 +109,24 @@ int main()
             for (int x=0;x<FileCol;x++) // After the file is successfully open/created, ask user column's name one column by one column
             {
                string col;
-                cout<<"Enter column "<<x+1<<" name (Name (TEXT/INT)): "<<endl;
-               getline(cin,col);
-               colName.push_back(col);
+               bool valid = false;
+               while (!valid)
+               {
+                   cout<<"Enter column "<<x+1<<" name (Name (TEXT/INT)): "<<endl;
+                   getline(cin,col);
+
+                   // Validate column format
+                   if (validate_column_format(col))
+                   {
+                       valid = true;
+                       colName.push_back(col);
+                   }
+                   else
+                   {
+                       cout << "Error: Column must end with type specification (TEXT) or (INT)." << endl;
+                       cout << "Example: Name (TEXT) or Age (INT)" << endl;
+                   }
+               }
             }
             for (int x = 0; x < FileCol; x++)
             {
@@ -175,7 +201,8 @@ void initialize_metadata(string file)
       }
       for (int x=0;x<FileCol;x++)
       {
-         if (colName[x].find("TEXT") != string::npos)
+         size_t len = colName[x].length();
+         if (len >= 6 && colName[x].substr(len - 6) == "(TEXT)")
             colType[x]="string";
          else
             colType[x]="int";
@@ -234,6 +261,35 @@ void view_attendance_sheet()
     inFile.close();
 }
 //Jack's Part
+string get_text()
+      {
+          string input;
+
+          while(true)
+          {
+              bool valid = true;
+              getline(cin >> ws, input);
+
+              for (char c : input)
+              {
+                if (!isalpha(c) && !isspace(c))
+                {
+                    valid = false;
+                    break;
+                }
+              }
+
+              if (valid && !input.empty())
+              {
+                  return input; //only alphbet + space
+              }
+              else
+              {
+                  cout << "Invalid input! Only alphabets and space allowed. Try again.\n";
+              }
+          }
+      }
+
 void insert_new_row(string file_name)
 {
    ofstream file(file_name, ios::app); // Open file in append mode
@@ -247,12 +303,12 @@ void insert_new_row(string file_name)
    for (int x=0; x<FileCol; x++) //Loop through
    {
       //We check through the column type, if it is string type, the type of data write into file will be string type
-      if (colType[x]== "string")
+      if(colType[x] == "string")
       {
-         string value;
-         cout << "Enter " << colName[x] << " : ";
-         getline(cin >> ws, value);
-         file << value;
+          string value;
+          cout << "Enter " << colName[x] << " : ";
+          value = get_text();
+          file << value;
       }
       else
       {
@@ -281,6 +337,36 @@ void insert_new_row(string file_name)
    file.close();
 }
 
+//count row
+int count_rows_except_header(const string& filename)
+{
+    // Make sure the file exists and is in the correct folder. Otherwise, the function will return 0.
+    ifstream inFile(filename);
+    if (!inFile.is_open())
+        return 0;
+
+    string line;
+    int count = 0;
+    bool isFirstLine = true; //skip the header row
+
+    while (getline(inFile, line))
+    {
+        if (line.empty()) continue;
+
+        if (isFirstLine)
+        {
+            isFirstLine = false; //skip header
+            continue;
+        }
+
+        count++;
+    }
+
+    inFile.close();
+    return count;
+}
+
+
 //Ian's part
 //Everything ok, need prompted more friendly if user input less than 1 and more than 3.
 CHOICE show_menu()
@@ -308,13 +394,24 @@ CHOICE show_menu()
     int input = 0;
     CHOICE choice;
     do {
-
         cout << "\n=====MENU=====\n";
         cout << "1) Insert New Row\n";
         cout << "2) View Sheet (CSV Mode)\n";
-        cout << "3) Exit\n";
-        cout << "Enter your choice[IN NUMEBR(1/2/3)]: ";
+        cout << "3) Count Records\n";  //(Exclude Header)
+        cout << "4) Exit\n";
+        cout << "Enter your choice[IN NUMBER(1/2/3/4)]: ";
+
         cin >> input;
+
+        //Handling non-numeric inputs
+        if (!cin)  //Detect invalid input
+        {
+            cout << "Invalid input! Please enter a number(1/2/3/4) only.\n";
+            cin.clear();  //Reset input stream
+            cin.ignore(numeric_limits<streamsize>::max(),'\n');  //Remove garbage input
+            continue;  //Retry the menu
+        }
+
         switch(input)
         {
             case 1:
@@ -324,12 +421,102 @@ CHOICE show_menu()
                 choice = VIEW_SHEET;
                 break;
             case 3:
+            {
+                choice = COUNT_ROW;
+                int total = count_rows_except_header(file);
+                cout << "\nTotal Records: " << total << endl;
+                break;
+            }
+            case 4:
                 choice = EXIT;
                 break;
-            default: "Invalid! Enter 1/2/3 only. ";
+
+            default:
+                cout << "\nInvalid! Enter 1/2/3/4 only.";
         }
 
-    } while (input <1 || input > 3);
+    } while (input <1 || input > 4);
 
     return choice;
+}
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <cstring>
+#include <sstream>
+
+using namespace std;
+
+void updateSts() {
+    string fileName;
+    string ID;
+    vector<string> studentID;
+    string line;
+    char newSts;
+    char Lines[100];
+    vector<string> lines;
+    cout<< "Insert the file name which you like to modify: ";
+    cin >> fileName;
+    fileName=fileName+".txt";
+
+    cout << "Insert your student ID: ";
+    cin >> ID;
+
+    ifstream change(fileName);
+    if (!change)
+    {
+        cout << "File not found!";
+        main();
+    }
+
+    while (getline(change, line)) {
+        lines.push_back(line);
+    }
+    change.close();
+
+    for (int i = 0; i < lines.size(); i++) {
+        string currentline = lines[i];
+        stringstream ss(currentline);
+
+        string tempID;
+        getline(ss, tempID, ',');
+        studentID.push_back(tempID);
+
+        if (studentID[i] == ID) {
+            cout << "Please insert the new status: ";
+            cin >> newSts;
+
+            string eachLines = lines[i];
+            strcpy(Lines, eachLines.c_str());
+            int len = strlen(Lines);
+            if (Lines[len - 1] == newSts)
+            {
+                cout << "This student status is already " << newSts << endl;
+            }
+            else {
+                Lines[len - 1] = newSts;
+                lines[i] = Lines;
+                cout << "You successfully updated this student status to " << newSts << " ." << endl;
+                ofstream update(fileName);
+                if (update.is_open())
+                {
+                    for (int i = 0; i < lines.size(); i++)
+                    {
+                        update << lines[i] << endl;
+                    }
+                update.close();
+                cout << "File saved successfully!" << endl;
+                }
+
+                else
+                {
+                cout << "Error: Could not open file for writing!" << endl;
+                }
+            }
+        }
+    }
+
+    main();
 }
